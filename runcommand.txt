@@ -1,0 +1,1 @@
+docker run -t -i -e vso_username=username -e vso_password=password -e vso_url=https://name.visualstudio.com -e vso_agentname=agentname dockerimagename:version 

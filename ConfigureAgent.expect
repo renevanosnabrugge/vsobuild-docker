@@ -1,0 +1,10 @@
+#!/usr/bin/expect
+spawn node agent/vsoagent
+expect "Enter alternate username" { send "$env(vso_username)\n" }
+expect "Enter alternate password" { send "$env(vso_password)\n" }
+expect "Enter server url" { send "$env(vso_url)\n" }
+expect "Enter agent name" { send "$env(vso_agentname)\n" }
+expect "Enter agent pool name" { send "$env(vso_agentpool)\n" }
+
+
+interact
