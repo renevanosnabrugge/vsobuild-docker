@@ -13,10 +13,17 @@ ENV vso_service_password=vsoservice
 
 RUN sudo apt-get update
 
-# INSTALL NODE
+# INSTALL Expect
 RUN sudo apt-get install expect -y
+
+# INSTALL GIT
+RUN sudo apt-get install git -y
+
+# INSTALL NODE
 RUN sudo apt-get install nodejs npm -y
 RUN sudo apt-get install nodejs-legacy -y
+
+# INSTALL VSO Agent
 RUN sudo npm install vsoagent-installer -g
 
 #CREATE SOME dirs
