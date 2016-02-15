@@ -1,0 +1,5 @@
+BUILD
+docker --tlsverify build  -t repo/name:v1 .
+
+RUN
+docker --tlsverify run -t -i -e vso_username=USERNAME -e vso_password=PASSWORD -e vso_url=https://account.visualstudio.com -e vso_agentname=AGENTNAME repo/name:v1 cmd
