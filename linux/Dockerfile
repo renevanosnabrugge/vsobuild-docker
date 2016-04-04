@@ -19,9 +19,12 @@ RUN sudo apt-get install expect -y
 # INSTALL GIT
 RUN sudo apt-get install git -y
 
+# INSTALL CURL
+RUN sudo apt-get install curl -y
+
 # INSTALL NODE
-RUN sudo apt-get install nodejs npm -y
-RUN sudo apt-get install nodejs-legacy -y
+RUN curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
+RUN sudo apt-get install -y nodejs
 
 # INSTALL VSO Agent
 RUN sudo npm install vsoagent-installer -g
@@ -33,8 +36,6 @@ RUN mkdir opt/buildagent/_work
 #COPY expect file
 WORKDIR /opt/buildagent
 COPY ConfigureAgent.expect ConfigureAgent.expect
-COPY run.sh run.sh
-RUN sudo chmod +x run.sh 
 
 #  Create a service user 
 RUN echo "${vso_service_username}\n${vso_service_password}\n\n\n\n\n\n\n" | adduser ${vso_service_username}
@@ -47,4 +48,6 @@ WORKDIR /opt/buildagent/agent
 RUN sudo chown -R ${vso_service_username} /opt/buildagent
 
 WORKDIR /opt/buildagent
-CMD ./run.sh
+COPY run.sh run.sh
+RUN sudo chmod +x run.sh
+CMD ["/bin/sh","./run.sh"]
