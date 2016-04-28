@@ -1,10 +1,12 @@
 #!/usr/bin/expect
-spawn node agent/vsoagent
-expect "Enter alternate username" { send "$env(vso_username)\n" }
-expect "Enter alternate password" { send "$env(vso_password)\n" }
-expect "Enter server url" { send "$env(vso_url)\n" }
-expect "Enter agent name" { send "$env(vso_agentname)\n" }
-expect "Enter agent pool name" { send "$env(vso_agentpool)\n" }
-expect "Enter force basic" { send "false\n"}
+spawn ./run.sh
+expect "Enter Server URL" { send "$env(vsts_url)\n" }
+expect "Enter Authentication Type (press Enter for PAT)" { send "\n" }
+expect "Enter PersonalAccessToken" { send "$env(vsts_password)\n" }
+expect "Enter Pool Name (press Enter for default)" { send "$env(vsts_agentpool)\n" }
+expect "Enter Agent Name" { send "$env(vsts_agentname)\n" }
+expect "Enter Replace? (Y/N) (press Enter for N)" { send "Y\n"}
+expect "Enter Work Folder (press Enter for _work)" { send "\n" }
+expect "Enter Run Agent as service (press Enter for N)" { send "\n" }
 
 interact
