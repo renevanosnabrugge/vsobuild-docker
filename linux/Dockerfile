@@ -1,53 +1,46 @@
 FROM ubuntu:14.04
 MAINTAINER name <email@domain.com>
 
-#env variables
-ENV vso_username=""
-ENV vso_password=""
-ENV vso_url=""
-ENV vso_agentname=$HOSTNAME
-ENV vso_agentpool=default
-ENV vso_service_username=vsoservice
-ENV vso_service_password=vsoservice
+# Environment variables
+ENV vsts_username ""
+ENV vsts_password ""
+ENV vsts_url ""
+ENV vsts_agentname $HOSTNAME
+ENV vsts_agentpool default
+ENV vsts_service_username vsoservice
+ENV vsts_service_password vsoservice
+ENV LANG en_US.UTF-8
 
+# Set locale
+RUN locale-gen en_US.UTF-8
 
-RUN sudo apt-get update
+# Add repo source and update package listing
+RUN sh -c 'echo "deb [arch=amd64] http://apt-mo.trafficmanager.net/repos/dotnet/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
+RUN apt-key adv --keyserver apt-mo.trafficmanager.net --recv-keys 417A0893
+RUN apt-get update
 
-# INSTALL Expect
-RUN sudo apt-get install expect -y
+# Install dependencies
+RUN apt-get install -y libicu52 dotnet=1.0.0.001598-1 expect git curl
 
-# INSTALL GIT
-RUN sudo apt-get install git -y
-
-# INSTALL CURL
-RUN sudo apt-get install curl -y
-
-# INSTALL NODE
-RUN curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
-RUN sudo apt-get install -y nodejs
-
-# INSTALL VSO Agent
-RUN sudo npm install vsoagent-installer -g
-
-#CREATE SOME dirs
-RUN mkdir opt/buildagent
-RUN mkdir opt/buildagent/_work
-
-#COPY expect file
+# Create VSTS agent build directories
+RUN mkdir -p /opt/buildagent
+RUN mkdir -p /opt/buildagent/_work
 WORKDIR /opt/buildagent
+
+# Install VSTS agent
+RUN curl -kSLO https://github.com/Microsoft/vsts-agent/releases/download/v0.7/vsts-agent-linux-1.999.0-0405.tar.gz
+RUN tar zxvf vsts-agent-linux-1.999.0-0405.tar.gz
+
+# Copy expect file
 COPY ConfigureAgent.expect ConfigureAgent.expect
 
 #  Create a service user 
-RUN echo "${vso_service_username}\n${vso_service_password}\n\n\n\n\n\n\n" | adduser ${vso_service_username}
-RUN su ${vso_service_username}
+RUN echo "${vsts_service_username}\n${vsts_service_password}\n\n\n\n\n\n\n" | adduser ${vsts_service_username}
+RUN su ${vsts_service_username}
 
-#  Install the agent
+# Configure CMD
 WORKDIR /opt/buildagent
-RUN vsoagent-installer
-WORKDIR /opt/buildagent/agent
-RUN sudo chown -R ${vso_service_username} /opt/buildagent
-
-WORKDIR /opt/buildagent
-COPY run.sh run.sh
-RUN sudo chmod +x run.sh
-CMD ["/bin/sh","./run.sh"]
+RUN chown -R ${vsts_service_username} /opt/buildagent
+COPY runagent.sh runagent.sh
+RUN chmod +x runagent.sh
+CMD ["/bin/sh","./runagent.sh"]
